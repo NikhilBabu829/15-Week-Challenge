@@ -58,3 +58,6 @@ coverage/
 .cxx/
 cmake/
 CMake/
+
+# Three.js Project Specific
+/ThreeJs/Chapter-2-ClassicTech/ParticlesTut/node_modules/
