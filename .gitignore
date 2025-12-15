@@ -1,0 +1,60 @@
+# Android Studio
+.gradle
+build/
+local.properties
+.idea/
+*.iml
+*.hprof
+
+# macOS
+.DS_Store
+
+# Gemini
+.gemini/
+GEMINI.md
+
+# Build files
+*.apk
+*.aab
+*.ap_
+*.jar
+*.war
+*.ear
+
+# Keystore files
+*.jks
+*.keystore
+
+# C/C++
+*.o
+*.so
+*.a
+*.obj
+*.lib
+*.dll
+*.class
+*.pyc
+*.pyo
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*~
+.#*
+*.swp
+*#
+*.bak
+*.orig
+*~
+*.orig
+*~1
+*~2
+
+# Coverage reports
+.cxx/
+coverage/
+.cxx/
+cmake/
+CMake/
