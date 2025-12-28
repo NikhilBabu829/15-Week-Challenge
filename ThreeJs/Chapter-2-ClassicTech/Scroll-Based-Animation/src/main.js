@@ -6,12 +6,18 @@ import GUI from 'lil-gui'
  */
 const gui = new GUI()
 
+const textureLoader = new THREE.TextureLoader()
+const gradientTexture = textureLoader.load('../static/textures/gradients/5.jpg')
+
 const parameters = {
     materialColor: '#ffeded'
 }
 
 gui
     .addColor(parameters, 'materialColor')
+    .onChange(()=>{
+        material.color.set(parameters.materialColor)
+    })
 
 /**
  * Base
@@ -22,14 +28,28 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-/**
- * Test cube
- */
-const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial({ color: '#ff0000' })
+const material = new THREE.MeshToonMaterial({ color: parameters.materialColor })
+
+const mesh = new THREE.Mesh(
+    new THREE.TorusGeometry(1, 0.4, 16, 60),
+    material
 )
-scene.add(cube)
+
+const mesh2 = new THREE.Mesh(
+    new THREE.ConeGeometry(1, 2, 32),
+    material
+)
+
+const mesh3 = new THREE.Mesh(
+    new THREE.TorusKnotGeometry(0.8, 0.35, 100, 16),
+    material
+)
+
+scene.add(mesh, mesh2, mesh3)
+
+const directionalLight = new THREE.DirectionalLight('#ffffff', 3)
+directionalLight.position.set(1, 1, 0)
+scene.add(directionalLight)
 
 /**
  * Sizes
