@@ -2,8 +2,8 @@ const s = "carrace"
 const t = "racecar"
 
 function isAnagram(s, t) {
-    const S = s.split("").sort().toString()
-    const T = t.split("").sort().toString()
+    const S = s.split("").sort().join("")
+    const T = t.split("").sort().join("")
     if(S == T){
         return true
     }else{
