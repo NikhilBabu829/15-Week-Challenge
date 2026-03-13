@@ -1,23 +1,63 @@
 import * as THREE from 'three'
 import GUI from 'lil-gui'
+import gsap from 'gsap'
 
 /**
  * Debug
  */
 const gui = new GUI()
 
-const textureLoader = new THREE.TextureLoader()
-const gradientTexture = textureLoader.load('../static/textures/gradients/5.jpg')
-
 const parameters = {
     materialColor: '#ffeded'
 }
+
+let scrollY = window.scrollY
+
+const mouseValue = {
+    x : 0,
+    y : 0
+}
+
+window.addEventListener('mousemove', (event)=>{
+    mouseValue.x = - ((event.clientX / sizes.width) - 0.5)
+    mouseValue.y = (event.clientY / sizes.height) - 0.5 
+})
+
+let currentSection = 0
+
+window.addEventListener('scroll', ()=>{
+    scrollY = window.scrollY
+
+    const newSection = Math.round(scrollY / sizes.height)
+
+    if(newSection !== currentSection){
+        currentSection = newSection
+
+        gsap.to(
+            allMeshes[currentSection].rotation,
+            {
+                duration: 1.5,
+                ease: 'power2.inOut',
+                x: '+=6',
+                y: '+=3',
+                z: '+=1.5'
+            }
+        )
+    }
+
+})
 
 gui
     .addColor(parameters, 'materialColor')
     .onChange(()=>{
         material.color.set(parameters.materialColor)
     })
+
+const textureLoader = new THREE.TextureLoader()
+const gradientTexture = textureLoader.load('/textures/gradients/5.jpg')
+gradientTexture.magFilter = THREE.NearestFilter
+
+const objectsDistance = 4
 
 /**
  * Base
@@ -28,24 +68,61 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-const material = new THREE.MeshToonMaterial({ color: parameters.materialColor })
+const cameraGroup = new THREE.Group()
+scene.add(cameraGroup)
 
-const mesh = new THREE.Mesh(
-    new THREE.TorusGeometry(1, 0.4, 16, 60),
+const material = new THREE.MeshToonMaterial({ color: parameters.materialColor, gradientMap: gradientTexture })
+
+/**
+ * Test cube
+ */
+const torusMesh = new THREE.Mesh(
+    new THREE.TorusGeometry(1, 0.35, 16, 60),
     material
 )
 
-const mesh2 = new THREE.Mesh(
+const coneMesh = new THREE.Mesh(
     new THREE.ConeGeometry(1, 2, 32),
     material
 )
 
-const mesh3 = new THREE.Mesh(
+const torusKnotMesh = new THREE.Mesh(
     new THREE.TorusKnotGeometry(0.8, 0.35, 100, 16),
     material
 )
 
-scene.add(mesh, mesh2, mesh3)
+torusMesh.position.y = - objectsDistance * 0
+coneMesh.position.y = - objectsDistance * 1
+torusKnotMesh.position.y = - objectsDistance * 2
+
+torusMesh.position.x = 2
+coneMesh.position.x = - 2
+torusKnotMesh.position.x = 2
+
+scene.add(torusMesh, coneMesh, torusKnotMesh)
+
+const allMeshes = [torusMesh, coneMesh, torusKnotMesh]
+
+const particlesCount = 300
+const positions = new Float32Array(particlesCount * 3)
+
+for(let i = 0; i < particlesCount; i++){
+    positions[i * 3 + 0] = (Math.random() - 0.5) * 10
+    positions[i * 3 + 1] = objectsDistance * 0.5 - Math.random() * objectsDistance * 3
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 10
+}
+
+const particlesGeometry = new THREE.BufferGeometry()
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+
+const particlesMaterial = new THREE.PointsMaterial({
+    color: parameters.materialColor,
+    sizeAttenuation: true,
+    size: 0.03
+})
+
+const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+scene.add(particles)
 
 const directionalLight = new THREE.DirectionalLight('#ffffff', 3)
 directionalLight.position.set(1, 1, 0)
@@ -80,14 +157,14 @@ window.addEventListener('resize', () =>
 // Base camera
 const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100)
 camera.position.z = 6
-scene.add(camera)
+cameraGroup.add(camera)
 
 /**
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
-    alpha : true
+    alpha: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -96,10 +173,25 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 const clock = new THREE.Clock()
+let previousTime = 0
 
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+    const deltaTime = elapsedTime - previousTime
+    previousTime = elapsedTime
+
+
+    camera.position.y = - scrollY / sizes.height * objectsDistance
+
+    cameraGroup.position.y += (mouseValue.y - cameraGroup.position.y) * 4 * deltaTime
+    cameraGroup.position.x += (mouseValue.x - cameraGroup.position.x) * 4 * deltaTime
+
+
+    for(const mesh of allMeshes){
+        mesh.rotation.x += deltaTime * 0.1
+        mesh.rotation.y += deltaTime * 0.12
+    }
 
     // Render
     renderer.render(scene, camera)

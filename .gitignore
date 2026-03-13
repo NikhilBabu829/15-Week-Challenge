@@ -65,7 +65,11 @@ CMake/
 
 /ThreeJs/Chapter-2-ClassicTech/GalaxyGenerator/node_modules/
 /ThreeJs/Chapter-2-ClassicTech/GalaxyGenerator/static/
+/ThreeJs/Chapter-2-ClassicTech/GalaxyGenerator/.vercel/
+/ThreeJs/Chapter-2-ClassicTech/GalaxyGenerator/assets/
 
 /ThreeJs/Chapter-2-ClassicTech/Scroll-Based-Animation/node_modules/
 /ThreeJs/Chapter-2-ClassicTech/Scroll-Based-Animation/public/
 /ThreeJs/Chapter-2-ClassicTech/Scroll-Based-Animation/static/
+/ThreeJs/Chapter-2-ClassicTech/Scroll-Based-Animation/.vercel/
+/ThreeJs/Chapter-2-ClassicTech/Scroll-Based-Animation/dist/
